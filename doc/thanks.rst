@@ -1,0 +1,5 @@
+=========
+ Credits
+=========
+
+.. include:: files/THANKS

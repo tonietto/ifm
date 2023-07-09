@@ -1,0 +1,835 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Language &mdash; IFM 5.5 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '5.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="shortcut icon" href="_static/logo.ico"/>
+    <link rel="top" title="IFM 5.5 documentation" href="contents.html" />
+    <link rel="next" title="Output variables" href="vars.html" />
+    <link rel="prev" title="Using IFM" href="usage.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="language">
+<h1>Language<a class="headerlink" href="#language" title="Permalink to this headline">¶</a></h1>
+<p>This section gives a complete detailed description of the IFM language.</p>
+<div class="section" id="symbols">
+<h2>Symbols<a class="headerlink" href="#symbols" title="Permalink to this headline">¶</a></h2>
+<p>In the following sections, these symbols are used:</p>
+<dl class="docutils">
+<dt><code class="samp docutils literal"><span class="pre">ID</span></code></dt>
+<dd>A name starting with a letter, followed by any combination of
+upper- and lowercase letters or numbers or an underscore. For
+example, <code class="docutils literal"><span class="pre">Dense_Forest</span></code>. IDs are not allowed to clash with
+reserved words (e.g., <code class="docutils literal"><span class="pre">room</span></code>, or <code class="docutils literal"><span class="pre">tag</span></code>). One way to avoid this
+is to capitalize all tags (reserved words are all in lowercase).</dd>
+<dt><code class="samp docutils literal"><span class="pre">STRING</span></code></dt>
+<dd><p class="first">Any sequence of characters, in double-quotes.  For example, <code class="docutils literal"><span class="pre">&quot;Black</span>
+<span class="pre">Rod&quot;</span></code>. To get a double-quote inside a string, quote it using a
+backslash, like this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="s2">&quot;Ground Floor, </span><span class="se">\&quot;</span><span class="s2">A</span><span class="se">\&quot;</span><span class="s2"> Block&quot;</span>
+</pre></div>
+</div>
+<p class="last">You can continue strings on several lines&#8212;a
+newline-and-whitespace sequence is translated into a single space,
+just like in TADS and Inform.</p>
+</dd>
+<dt><code class="samp docutils literal"><span class="pre">NUMBER</span></code></dt>
+<dd>A number. If the context requires an integer, the number is
+silently rounded to the larges integer not greater than this
+value.</dd>
+<dt><code class="samp docutils literal"><span class="pre">COMPASS</span></code></dt>
+<dd>A compass direction, which can be abbreviated or in full (e.g.,
+<code class="docutils literal"><span class="pre">n</span></code>, <code class="docutils literal"><span class="pre">se</span></code>, <code class="docutils literal"><span class="pre">northwest</span></code>, etc).</dd>
+<dt><code class="samp docutils literal"><span class="pre">OTHERDIR</span></code></dt>
+<dd>One of <code class="docutils literal"><span class="pre">up</span></code>, <code class="docutils literal"><span class="pre">down</span></code>, <code class="docutils literal"><span class="pre">in</span></code> or <code class="docutils literal"><span class="pre">out</span></code>.</dd>
+<dt><code class="samp docutils literal"><span class="pre">[...]</span></code></dt>
+<dd>An optional part.</dd>
+<dt><code class="samp docutils literal"><span class="pre">A</span> <span class="pre">|</span> <span class="pre">B</span></code></dt>
+<dd>Either A or B.</dd>
+</dl>
+</div>
+<div class="section" id="format">
+<h2>Format<a class="headerlink" href="#format" title="Permalink to this headline">¶</a></h2>
+<p>IFM generally has a free-format layout&#8212;i.e., whitespace may be placed
+anywhere to increase readability. The only exception is inside quoted
+strings, where spaces are significant. Comments may be added, starting with
+a hash (<code class="docutils literal"><span class="pre">#</span></code>) and continuing to the end of the line. All commands are
+terminated with a semicolon.</p>
+</div>
+<div class="section" id="control">
+<h2>Control<a class="headerlink" href="#control" title="Permalink to this headline">¶</a></h2>
+<p>The overall title of the map may be set using the command:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">title</span> <span class="n">STRING</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>If a map has several sections, you can set the title of each section using
+the command:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="nb">map</span> <span class="n">STRING</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>This sets the title of the next map section. If you use this command at
+all, then the number of uses should be the same as the actual number of map
+sections. It&#8217;s conventional (but not required) to put the <code class="samp docutils literal"><span class="pre">map</span></code>
+command just before the room that starts a new map section.</p>
+<p>If your map uses features that are only present in later versions of IFM,
+you can indicate that up front by using the command:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">require</span> <span class="n">NUMBER</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Then, if the IFM version number is less than this number, parsing will
+abort immediately, avoiding lots of potentially confusing syntax errors.</p>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 5.0: </span>The <code class="samp docutils literal"><span class="pre">require</span></code> keyword.</p>
+</div>
+</div>
+<div class="section" id="tags">
+<h2>Tags<a class="headerlink" href="#tags" title="Permalink to this headline">¶</a></h2>
+<p>All IFM objects may be given tag names, so that you can refer to them in
+other commands. Tags for different types of object are independent&#8212;for
+example, you could have a room and an item with the same tag.  However,
+tags for similar objects must be unique.</p>
+<p>In many cases, you are allowed to refer to a tag name anywhere, even
+earlier in the file that you defined it (as long as the tag is defined
+<em>somewhere</em>!). Exceptions are the <a class="reference internal" href="#room">room</a> <code class="samp docutils literal"><span class="pre">from</span> <span class="pre">ID</span></code> clause and tags in
+commands that modify existing objects&#8212;these tags must be defined before
+being used.</p>
+</div>
+<div class="section" id="special-names">
+<h2>Special names<a class="headerlink" href="#special-names" title="Permalink to this headline">¶</a></h2>
+<p>There are three special names that can refer to IFM objects in certain
+contexts:</p>
+<dl class="docutils">
+<dt><code class="samp docutils literal"><span class="pre">last</span></code></dt>
+<dd>May be used to refer to the last object of a certain type that was
+defined in a previous statement.</dd>
+<dt><code class="samp docutils literal"><span class="pre">it</span></code></dt>
+<dd>May be used to refer to the most recent object in the current
+statement.</dd>
+<dt><code class="samp docutils literal"><span class="pre">them</span></code></dt>
+<dd><p class="first">May be used to refer to all the items mentioned so far in the current
+statement.</p>
+<div class="last versionadded">
+<p><span class="versionmodified">New in version 5.3.</span></p>
+</div>
+</dd>
+</dl>
+</div>
+<div class="section" id="commands">
+<h2>Commands<a class="headerlink" href="#commands" title="Permalink to this headline">¶</a></h2>
+<p>There are five different types of object in IFM: rooms, items, links, joins
+and tasks. Each is created using its own command, the general format of
+which is:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="nb">type</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">body</span><span class="o">&gt;</span> <span class="p">[</span><span class="n">attribute</span><span class="o">-</span><span class="nb">list</span><span class="p">];</span>
+</pre></div>
+</div>
+<p>For rooms, items and tasks, <code class="docutils literal"><span class="pre">&lt;body&gt;</span></code> is just a string description. For
+links and joins, it specifies two room tags to link or join together.</p>
+<p>Many of the attributes or objects accept a list of tags as arguments. All
+of these, if specified more than once in the same object, concatenate the
+lists together.</p>
+<p>Once an object has been declared with a tag name, its attributes can be
+modified by later commands referring to that tag, like this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="nb">type</span><span class="o">&gt;</span> <span class="n">ID</span> <span class="p">[</span><span class="n">attribute</span><span class="o">-</span><span class="nb">list</span><span class="p">];</span>
+</pre></div>
+</div>
+<p>where <code class="docutils literal"><span class="pre">ID</span></code> is the tag name of the object. Note that the tag must be
+defined earlier in the file than it is used.</p>
+<div class="section" id="rooms">
+<span id="room"></span><h3>Rooms<a class="headerlink" href="#rooms" title="Permalink to this headline">¶</a></h3>
+<p>A new room is added using the command:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">room</span> <span class="n">STRING</span> <span class="p">[</span><span class="n">attribute</span><span class="o">-</span><span class="nb">list</span><span class="p">];</span>
+</pre></div>
+</div>
+<p>where <code class="docutils literal"><span class="pre">STRING</span></code> is a description of the room. Room attributes can be:</p>
+<dl class="docutils" id="index-0">
+<dt><code class="samp docutils literal"><span class="pre">tag</span> <span class="pre">ID</span></code></dt>
+<dd>Give the room a tag name, so that you can refer to it elsewhere.</dd>
+</dl>
+<dl class="docutils" id="index-1">
+<dt><code class="samp docutils literal"><span class="pre">dir</span> <span class="pre">COMPASS</span> <span class="pre">[NUMBER]</span> <span class="pre">[COMPASS</span> <span class="pre">[NUMBER]...]</span> <span class="pre">[from</span> <span class="pre">ID]</span></code></dt>
+<dd><p class="first">Specify the position of the room relative to the room with the given
+tag ID (which must be defined before it is used).  If no
+<code class="samp docutils literal"><span class="pre">from</span></code> clause is specified, the last defined room is used
+instead. There can be more than one direction given&#8212;the new room
+is placed relative to the previous one using them. Following a
+direction with a number means to repeat it that many times.</p>
+<p>The <code class="samp docutils literal"><span class="pre">dir</span></code> clause creates an implicit link between this room
+and the previous one. Some of the room attributes below behave
+differently depending on whether they appear before or after the
+<code class="samp docutils literal"><span class="pre">dir</span></code> clause in the attribute list.</p>
+<p class="last">If the room is given a tag name, then the implicit link will be
+given the same tag.</p>
+</dd>
+</dl>
+<dl class="docutils" id="index-2">
+<dt><code class="samp docutils literal"><span class="pre">link</span> <span class="pre">ID</span> <span class="pre">[ID...]</span></code></dt>
+<dd>Specify other rooms that this room links to.  Note that this creates
+a link with no special attributes&#8212;use the standalone <code class="samp docutils literal"><span class="pre">link</span></code>
+command for that.</dd>
+</dl>
+<dl class="docutils" id="index-3">
+<dt><code class="samp docutils literal"><span class="pre">join</span> <span class="pre">ID</span> <span class="pre">[ID...]</span></code></dt>
+<dd>Specify rooms on other map sections that this room joins to. Note
+that this creates a join with no special attributes&#8212;use the
+standalone <code class="samp docutils literal"><span class="pre">join</span></code> command for that.</dd>
+</dl>
+<dl class="docutils" id="index-4">
+<dt><code class="samp docutils literal"><span class="pre">exit</span> <span class="pre">COMPASS</span> <span class="pre">[COMPASS...]</span></code></dt>
+<dd>Indicate which other directions the room has exits in. Room exits in
+a particular direction are marked on the map only if there is no
+link going to or from the room in that direction.</dd>
+</dl>
+<dl class="docutils" id="index-5">
+<dt><code class="samp docutils literal"><span class="pre">note</span> <span class="pre">STRING</span></code></dt>
+<dd>Append a note to the room&#8217;s note list.</dd>
+</dl>
+<dl class="docutils" id="index-6">
+<dt><code class="samp docutils literal"><span class="pre">score</span> <span class="pre">NUMBER</span></code></dt>
+<dd>Indicate that you score the specified number of points when visiting
+this room for the first time.</dd>
+</dl>
+<dl class="docutils" id="index-7">
+<dt><code class="samp docutils literal"><span class="pre">need</span> <span class="pre">ID</span> <span class="pre">[ID...]</span></code></dt>
+<dd>If this appears before a <code class="samp docutils literal"><span class="pre">dir</span></code> clause, indicate that you
+can only enter this room after getting the specified items. If it
+appears afterwards, it applies to the implicit link instead.</dd>
+</dl>
+<dl class="docutils" id="index-8">
+<dt><code class="samp docutils literal"><span class="pre">after</span> <span class="pre">ID</span> <span class="pre">[ID...]</span></code></dt>
+<dd>If this appears before a <code class="samp docutils literal"><span class="pre">dir</span></code> clause, indicate that you can
+only enter this room after doing the specified tasks. If it appears
+afterwards, it applies to the implicit link instead.</dd>
+</dl>
+<dl class="docutils" id="index-9">
+<dt><code class="samp docutils literal"><span class="pre">before</span> <span class="pre">ID</span> <span class="pre">[ID...]</span></code></dt>
+<dd>If this appears before a <code class="samp docutils literal"><span class="pre">dir</span></code> clause, indicate that you can
+only enter this room before doing the specified tasks. If it appears
+afterwards, it applies to the implicit link instead. Those tasks are
+marked unsafe.</dd>
+</dl>
+<dl class="docutils" id="index-10">
+<dt><code class="samp docutils literal"><span class="pre">leave</span> <span class="pre">ID</span> <span class="pre">[ID...]</span></code></dt>
+<dd>If this appears before a <code class="samp docutils literal"><span class="pre">dir</span></code> clause, indicate that the
+specified items, if carried, must be left behind when entering the
+room. If it appears afterwards, it applies to the implicit link
+instead.</dd>
+<dt><code class="samp docutils literal"><span class="pre">leave</span> <span class="pre">all</span> <span class="pre">[except</span> <span class="pre">ID</span> <span class="pre">[ID...]]</span></code></dt>
+<dd>As above, except indicate that all items must be left behind. The
+<code class="samp docutils literal"><span class="pre">except</span></code> clause can be used to omit specific items.</dd>
+</dl>
+<dl class="docutils" id="index-11">
+<dt><code class="samp docutils literal"><span class="pre">go</span> <span class="pre">OTHERDIR</span></code></dt>
+<dd>Indicate that the link to this room is in the specified direction.</dd>
+</dl>
+<dl class="docutils" id="index-12">
+<dt><code class="samp docutils literal"><span class="pre">cmd</span> <span class="pre">STRING</span></code></dt>
+<dd>Specify the command you type to move to this room from the previous
+one. If no <code class="samp docutils literal"><span class="pre">cmd</span></code> clause is given, the command is deduced from
+the <code class="samp docutils literal"><span class="pre">go</span></code> clause. If that isn&#8217;t specified, the command will be
+deduced from the <code class="samp docutils literal"><span class="pre">dir</span></code> clause.</dd>
+<dt><code class="samp docutils literal"><span class="pre">cmd</span> <span class="pre">from</span> <span class="pre">STRING</span></code></dt>
+<dd>As above, but this specifies the command to go in the other
+direction. This defaults to the <code class="samp docutils literal"><span class="pre">cmd</span> <span class="pre">to</span></code> command, if
+specified.</dd>
+<dt><code class="samp docutils literal"><span class="pre">cmd</span> <span class="pre">to</span> <span class="pre">STRING</span></code></dt>
+<dd>This is identical to <code class="samp docutils literal"><span class="pre">cmd</span></code> on its own, and only exists for
+symmetry.</dd>
+</dl>
+<dl class="docutils" id="index-13">
+<dt><code class="samp docutils literal"><span class="pre">oneway</span></code></dt>
+<dd>Indicate that the return journey from this room to the previous one
+is not possible.</dd>
+</dl>
+<dl class="docutils" id="index-14">
+<dt><code class="samp docutils literal"><span class="pre">length</span> <span class="pre">NUMBER</span></code></dt>
+<dd>Indicate that the direction link to this room has the specified
+length (default 1). This only affects the calculation of the nearest
+<a class="reference internal" href="#task">task</a> when <a class="reference internal" href="solving.html#finding-solution"><span class="std std-ref">solving the game</span></a>.</dd>
+</dl>
+<dl class="docutils" id="index-15">
+<dt><code class="samp docutils literal"><span class="pre">start</span></code></dt>
+<dd>Indicate that this is the room the player starts in. Default is for
+the first room mentioned to be the start room. If more than one room
+has this attribute, the last one declared takes precedence.</dd>
+</dl>
+<dl class="docutils" id="index-16">
+<dt><code class="samp docutils literal"><span class="pre">finish</span></code></dt>
+<dd>Indicate that entering this room finishes the game.</dd>
+</dl>
+<dl class="docutils" id="index-17">
+<dt><code class="samp docutils literal"><span class="pre">nodrop</span></code></dt>
+<dd><p class="first">Indicate that no items should be voluntarily dropped in this room.</p>
+<div class="last versionadded">
+<p><span class="versionmodified">New in version 5.0.</span></p>
+</div>
+</dd>
+</dl>
+<dl class="docutils" id="index-18">
+<dt><code class="samp docutils literal"><span class="pre">nolink</span></code></dt>
+<dd>Indicate that this room does not have an implicit link with the
+previous one via the <code class="samp docutils literal"><span class="pre">dir</span></code> clause.</dd>
+</dl>
+<dl class="docutils" id="index-19">
+<dt><code class="samp docutils literal"><span class="pre">nopath</span></code></dt>
+<dd>Indicate that the implicit link from this room should not be used by
+the game solver.</dd>
+</dl>
+<dl class="docutils" id="index-20">
+<dt><code class="samp docutils literal"><span class="pre">style</span> <span class="pre">ID</span> <span class="pre">[ID...]</span></code></dt>
+<dd>Add a list of display <a class="reference internal" href="#styles">styles</a> to the room (and also the implicit
+link, if any).</dd>
+</dl>
+</div>
+<div class="section" id="items">
+<h3>Items<a class="headerlink" href="#items" title="Permalink to this headline">¶</a></h3>
+<p>An item is introduced using the command:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">item</span> <span class="n">STRING</span> <span class="p">[</span><span class="n">attribute</span><span class="o">-</span><span class="nb">list</span><span class="p">];</span>
+</pre></div>
+</div>
+<p>where <code class="samp docutils literal"><span class="pre">STRING</span></code> is the item description. Item attributes can be:</p>
+<dl class="docutils" id="index-21">
+<dt><code class="samp docutils literal"><span class="pre">tag</span> <span class="pre">ID</span></code></dt>
+<dd>Give the item a tag name, so you can refer to it elsewhere.</dd>
+</dl>
+<dl class="docutils" id="index-22">
+<dt><code class="samp docutils literal"><span class="pre">in</span> <span class="pre">ID</span></code></dt>
+<dd>Set the initial location of this item. Default is the last defined
+room. If there is no last room (i.e., an item was declared before
+any room was declared), then this item is initially carried by the
+player.</dd>
+</dl>
+<dl class="docutils" id="index-23">
+<dt><code class="samp docutils literal"><span class="pre">note</span> <span class="pre">STRING</span></code></dt>
+<dd>Append a note to the item&#8217;s note list.</dd>
+</dl>
+<dl class="docutils" id="index-24">
+<dt><code class="samp docutils literal"><span class="pre">score</span> <span class="pre">NUMBER</span></code></dt>
+<dd>Indicate that you get points the first time you pick this item up.</dd>
+</dl>
+<dl class="docutils" id="index-25">
+<dt><code class="samp docutils literal"><span class="pre">hidden</span></code></dt>
+<dd>Indicate that this item is not immediately obvious when entering the
+room.</dd>
+</dl>
+<dl class="docutils" id="index-26">
+<dt><code class="samp docutils literal"><span class="pre">keep</span></code></dt>
+<dd>Indicate that this item shouldn&#8217;t ever be dropped (no &#8220;drop&#8221; task
+should be generated).</dd>
+<dt><code class="samp docutils literal"><span class="pre">keep</span> <span class="pre">with</span> <span class="pre">ID</span> <span class="pre">[ID...]</span></code></dt>
+<dd><p class="first">Indicate that the item shouldn&#8217;t be dropped until all the other
+specified items have left the inventory.</p>
+<div class="last versionadded">
+<p><span class="versionmodified">New in version 5.0.</span></p>
+</div>
+</dd>
+<dt><code class="samp docutils literal"><span class="pre">keep</span> <span class="pre">until</span> <span class="pre">ID</span> <span class="pre">[ID...]</span></code></dt>
+<dd><p class="first">Indicate that the item shouldn&#8217;t be dropped until all the other
+specified tasks have been done.</p>
+<div class="last versionadded">
+<p><span class="versionmodified">New in version 5.0.</span></p>
+</div>
+</dd>
+</dl>
+<dl class="docutils" id="index-27">
+<dt><code class="samp docutils literal"><span class="pre">ignore</span></code></dt>
+<dd><p class="first">Indicate that this item should be ignored when trying to find a
+solution (i.e., never go out of your way to pick it up).</p>
+<div class="last versionadded">
+<p><span class="versionmodified">New in version 5.0.</span></p>
+</div>
+</dd>
+</dl>
+<dl class="docutils" id="index-28">
+<dt><code class="samp docutils literal"><span class="pre">given</span></code></dt>
+<dd><p class="first">Indicate that this item didn&#8217;t have to be picked up when it entered
+the inventory (no &#8220;get&#8221; task should be generated).</p>
+<div class="last admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This attribute is obsolete&#8212;you should use the <a class="reference internal" href="#task">task</a>
+<code class="samp docutils literal"><span class="pre">give</span></code> clause instead.</p>
+</div>
+</dd>
+</dl>
+<dl class="docutils" id="index-29">
+<dt><code class="samp docutils literal"><span class="pre">lost</span></code></dt>
+<dd>Indicate that this item wasn&#8217;t dropped when it left the inventory
+(no &#8220;drop&#8221; task should be generated).  Normally you should use the
+<a class="reference internal" href="#task">task</a> <code class="samp docutils literal"><span class="pre">drop</span></code> or <code class="samp docutils literal"><span class="pre">lose</span></code> clauses instead. The only
+use for this attribute is for items that are left behind due to a
+<code class="samp docutils literal"><span class="pre">leave</span></code> clause.</dd>
+</dl>
+<dl class="docutils" id="index-30">
+<dt><code class="samp docutils literal"><span class="pre">need</span> <span class="pre">ID</span> <span class="pre">[ID...]</span></code></dt>
+<dd>Indicate that you can only pick this item up after getting the
+specified items.</dd>
+</dl>
+<dl class="docutils" id="index-31">
+<dt><code class="samp docutils literal"><span class="pre">after</span> <span class="pre">ID</span> <span class="pre">[ID...]</span></code></dt>
+<dd>Indicate you can only pick this item up after the specified tasks
+are done.</dd>
+</dl>
+<dl class="docutils" id="index-32">
+<dt><code class="samp docutils literal"><span class="pre">before</span> <span class="pre">ID</span> <span class="pre">[ID...]</span></code></dt>
+<dd>Indicate you can only pick this item up before the specified tasks
+are done.</dd>
+</dl>
+<dl class="docutils" id="index-33">
+<dt><code class="samp docutils literal"><span class="pre">finish</span></code></dt>
+<dd>Indicate that getting this item finishes the game.</dd>
+</dl>
+<dl class="docutils" id="index-34">
+<dt><code class="samp docutils literal"><span class="pre">style</span> <span class="pre">ID</span> <span class="pre">[ID...]</span></code></dt>
+<dd>Add a list of display <a class="reference internal" href="#styles">styles</a> to the item.</dd>
+</dl>
+</div>
+<div class="section" id="links">
+<h3>Links<a class="headerlink" href="#links" title="Permalink to this headline">¶</a></h3>
+<p>You can create extra room links using the command:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">link</span> <span class="n">ID</span> <span class="n">to</span> <span class="n">ID</span> <span class="p">[</span><span class="n">attribute</span><span class="o">-</span><span class="nb">list</span><span class="p">];</span>
+</pre></div>
+</div>
+<p>and the following attributes may be specified:</p>
+<dl class="docutils" id="index-35">
+<dt><code class="samp docutils literal"><span class="pre">tag</span> <span class="pre">ID</span></code></dt>
+<dd>Give the link a tag name, so you can refer to it elsewhere.</dd>
+</dl>
+<dl class="docutils" id="index-36">
+<dt><code class="samp docutils literal"><span class="pre">dir</span> <span class="pre">COMPASS</span> <span class="pre">[COMPASS...]</span></code></dt>
+<dd>Set the intermediate directions that this link travels in, in the
+same manner as for rooms. Note that if you omit the final direction
+to the linked room, it is added automatically.</dd>
+</dl>
+<dl class="docutils" id="index-37">
+<dt><code class="samp docutils literal"><span class="pre">go</span> <span class="pre">OTHERDIR</span></code></dt>
+<dd>Indicate that the link is in the specified direction.</dd>
+</dl>
+<dl class="docutils" id="index-38">
+<dt><code class="samp docutils literal"><span class="pre">cmd</span> <span class="pre">STRING</span></code></dt>
+<dd>Specify the command you type to go in this direction. If no
+<code class="samp docutils literal"><span class="pre">cmd</span></code> clause is given, the command is deduced from the
+<code class="samp docutils literal"><span class="pre">go</span></code> clause. If that isn&#8217;t specified, the command will be
+deduced from the <code class="samp docutils literal"><span class="pre">dir</span></code> clause.</dd>
+<dt><code class="samp docutils literal"><span class="pre">cmd</span> <span class="pre">from</span> <span class="pre">STRING</span></code></dt>
+<dd>As above, but this specifies the command to go in the other
+direction. This defaults to the <code class="samp docutils literal"><span class="pre">cmd</span> <span class="pre">to</span></code> command, if
+specified.</dd>
+<dt><code class="samp docutils literal"><span class="pre">cmd</span> <span class="pre">to</span> <span class="pre">STRING</span></code></dt>
+<dd>This is identical to <code class="samp docutils literal"><span class="pre">cmd</span></code> on its own, and only exists for
+symmetry.</dd>
+</dl>
+<dl class="docutils" id="index-39">
+<dt><code class="samp docutils literal"><span class="pre">oneway</span></code></dt>
+<dd>Indicate that this is a one-way link, in a similar manner to the
+room attribute of the same name.</dd>
+</dl>
+<dl class="docutils" id="index-40">
+<dt><code class="samp docutils literal"><span class="pre">hidden</span></code></dt>
+<dd>Indicate that this link should not be drawn on the map. Hidden links
+are still used when solving the game.</dd>
+</dl>
+<dl class="docutils" id="index-41">
+<dt><code class="samp docutils literal"><span class="pre">nopath</span></code></dt>
+<dd>Indicate that this link should not be used by the game solver.</dd>
+</dl>
+<dl class="docutils" id="index-42">
+<dt><code class="samp docutils literal"><span class="pre">length</span> <span class="pre">NUMBER</span></code></dt>
+<dd>Indicate that this link has the specified length (default 1). This
+only affects the calculation of the nearest <a class="reference internal" href="#task">task</a> when <a class="reference internal" href="solving.html#finding-solution"><span class="std std-ref">solving
+the game</span></a>.</dd>
+</dl>
+<dl class="docutils" id="index-43">
+<dt><code class="samp docutils literal"><span class="pre">need</span> <span class="pre">ID</span> <span class="pre">[ID...]</span></code></dt>
+<dd>Indicate that you can only go in this direction after getting the
+specified items.</dd>
+</dl>
+<dl class="docutils" id="index-44">
+<dt><code class="samp docutils literal"><span class="pre">after</span> <span class="pre">ID</span> <span class="pre">[ID...]</span></code></dt>
+<dd>Indicate that you can only go in this direction after doing the
+specified tasks.</dd>
+</dl>
+<dl class="docutils" id="index-45">
+<dt><code class="samp docutils literal"><span class="pre">before</span> <span class="pre">ID</span> <span class="pre">[ID...]</span></code></dt>
+<dd>Indicate that you can only go in this direction before doing the
+specified tasks. These tasks are marked unsafe.</dd>
+</dl>
+<dl class="docutils" id="index-46">
+<dt><code class="samp docutils literal"><span class="pre">leave</span> <span class="pre">ID</span> <span class="pre">[ID...]</span></code></dt>
+<dd>Indicate that the specified items, if carried, must be left behind
+when using this connection.</dd>
+<dt><code class="samp docutils literal"><span class="pre">leave</span> <span class="pre">all</span> <span class="pre">[except</span> <span class="pre">ID</span> <span class="pre">[ID...]]</span></code></dt>
+<dd>As above, except indicate that all items must be left behind. The
+<code class="samp docutils literal"><span class="pre">except</span></code> clause can be used to omit specific items.</dd>
+</dl>
+<dl class="docutils" id="index-47">
+<dt><code class="samp docutils literal"><span class="pre">style</span> <span class="pre">ID</span> <span class="pre">[ID...]</span></code></dt>
+<dd>Add a list of display <a class="reference internal" href="#styles">styles</a> to the link.</dd>
+</dl>
+</div>
+<div class="section" id="joins">
+<h3>Joins<a class="headerlink" href="#joins" title="Permalink to this headline">¶</a></h3>
+<p>There is a standalone join command which joins two rooms on different map
+sections:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">join</span> <span class="n">ID</span> <span class="n">to</span> <span class="n">ID</span> <span class="p">[</span><span class="n">attribute</span><span class="o">-</span><span class="nb">list</span><span class="p">];</span>
+</pre></div>
+</div>
+<p>The following attributes may be specified:</p>
+<dl class="docutils" id="index-48">
+<dt><code class="samp docutils literal"><span class="pre">tag</span> <span class="pre">ID</span></code></dt>
+<dd>Give the join a tag name, so you can refer to it elsewhere.</dd>
+</dl>
+<dl class="docutils" id="index-49">
+<dt><code class="samp docutils literal"><span class="pre">go</span> <span class="pre">COMPASS</span> <span class="pre">|</span> <span class="pre">OTHERDIR</span></code></dt>
+<dd>Indicate that the join to this room is in the specified direction.</dd>
+</dl>
+<dl class="docutils" id="index-50">
+<dt><code class="samp docutils literal"><span class="pre">cmd</span> <span class="pre">STRING</span></code></dt>
+<dd>Specify the command you type to go in this direction. If no
+<code class="samp docutils literal"><span class="pre">cmd</span></code> clause is given, the command is deduced from the
+<code class="samp docutils literal"><span class="pre">go</span></code> clause. If that isn&#8217;t specified, the command will be
+undefined.</dd>
+<dt><code class="samp docutils literal"><span class="pre">cmd</span> <span class="pre">from</span> <span class="pre">STRING</span></code></dt>
+<dd>As above, but this specifies the command to go in the other
+direction. This defaults to the <code class="samp docutils literal"><span class="pre">cmd</span> <span class="pre">to</span></code> command, if
+specified.</dd>
+<dt><code class="samp docutils literal"><span class="pre">cmd</span> <span class="pre">to</span> <span class="pre">STRING</span></code></dt>
+<dd>This is identical to <code class="samp docutils literal"><span class="pre">cmd</span></code> on its own, and only exists for
+symmetry.</dd>
+</dl>
+<dl class="docutils" id="index-51">
+<dt><code class="samp docutils literal"><span class="pre">oneway</span></code></dt>
+<dd>Indicate that this is a one-way join, in a similar manner to the
+room attribute of the same name.</dd>
+</dl>
+<dl class="docutils" id="index-52">
+<dt><code class="samp docutils literal"><span class="pre">hidden</span></code></dt>
+<dd>Indicate that this join should not be drawn on the map. Hidden joins
+are still used when solving the game.</dd>
+</dl>
+<dl class="docutils" id="index-53">
+<dt><code class="samp docutils literal"><span class="pre">nopath</span></code></dt>
+<dd>Indicate that this join should not be used by the game solver.</dd>
+</dl>
+<dl class="docutils" id="index-54">
+<dt><code class="samp docutils literal"><span class="pre">length</span> <span class="pre">NUMBER</span></code></dt>
+<dd>Indicate that this join has the specified length (default 1). This
+only affects the calculation of the nearest <a class="reference internal" href="#task">task</a> when <a class="reference internal" href="solving.html#finding-solution"><span class="std std-ref">solving
+the game</span></a>.</dd>
+</dl>
+<dl class="docutils" id="index-55">
+<dt><code class="samp docutils literal"><span class="pre">need</span> <span class="pre">ID</span> <span class="pre">[ID...]</span></code></dt>
+<dd>Indicate that you can only go in this direction after getting the
+specified items.</dd>
+</dl>
+<dl class="docutils" id="index-56">
+<dt><code class="samp docutils literal"><span class="pre">after</span> <span class="pre">ID</span> <span class="pre">[ID...]</span></code></dt>
+<dd>Indicate that you can only go in this direction after doing the
+specified tasks.</dd>
+</dl>
+<dl class="docutils" id="index-57">
+<dt><code class="samp docutils literal"><span class="pre">before</span> <span class="pre">ID</span> <span class="pre">[ID...]</span></code></dt>
+<dd>Indicate that you can only go in this direction before doing the
+specified tasks. These tasks are marked unsafe.</dd>
+</dl>
+<dl class="docutils" id="index-58">
+<dt><code class="samp docutils literal"><span class="pre">leave</span> <span class="pre">ID</span> <span class="pre">[ID...]</span></code></dt>
+<dd>Indicate that the specified items, if carried, must be left behind
+when using this connection.</dd>
+</dl>
+<dl class="docutils" id="index-59">
+<dt><code class="samp docutils literal"><span class="pre">leave</span> <span class="pre">all</span> <span class="pre">[except</span> <span class="pre">ID</span> <span class="pre">[ID...]]</span></code></dt>
+<dd>As above, except indicate that all items must be left behind. The
+<code class="samp docutils literal"><span class="pre">except</span></code> clause can be used to omit specific items.</dd>
+</dl>
+<dl class="docutils" id="index-60">
+<dt><code class="samp docutils literal"><span class="pre">style</span> <span class="pre">ID</span> <span class="pre">[ID...]</span></code></dt>
+<dd>Add a list of display <a class="reference internal" href="#styles">styles</a> to the join.</dd>
+</dl>
+</div>
+<div class="section" id="tasks">
+<span id="task"></span><h3>Tasks<a class="headerlink" href="#tasks" title="Permalink to this headline">¶</a></h3>
+<p>You can indicate tasks which need to be done in order to solve the game
+using the command:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">task</span> <span class="n">STRING</span> <span class="p">[</span><span class="n">attribute</span><span class="o">-</span><span class="nb">list</span><span class="p">];</span>
+</pre></div>
+</div>
+<p>and these are the available attributes:</p>
+<dl class="docutils" id="index-61">
+<dt><code class="samp docutils literal"><span class="pre">tag</span> <span class="pre">ID</span></code></dt>
+<dd>Give the task a tag name, so you can refer to it elsewhere.</dd>
+</dl>
+<dl class="docutils" id="index-62">
+<dt><code class="samp docutils literal"><span class="pre">in</span> <span class="pre">ID</span></code></dt>
+<dd>Specify the room the task must be done in. If this clause is
+omitted, it defaults to the last defined room. You can use the
+special word <code class="samp docutils literal"><span class="pre">any</span></code> to indicate that the task may be
+performed anywhere. A task declared before any room is equivalent to
+saying <code class="samp docutils literal"><span class="pre">in</span> <span class="pre">any</span></code>.</dd>
+</dl>
+<dl class="docutils" id="index-63">
+<dt><code class="samp docutils literal"><span class="pre">need</span> <span class="pre">ID</span> <span class="pre">[ID...]</span></code></dt>
+<dd>Indicate that the specified items are required before you can do
+this task.</dd>
+</dl>
+<dl class="docutils" id="index-64">
+<dt><code class="samp docutils literal"><span class="pre">after</span> <span class="pre">ID</span> <span class="pre">[ID...]</span></code></dt>
+<dd>Indicate that this task can only be done after all the specified
+tasks have been done.</dd>
+</dl>
+<dl class="docutils" id="index-65">
+<dt><code class="samp docutils literal"><span class="pre">follow</span> <span class="pre">ID</span></code></dt>
+<dd>Indicate that this task must be done immediately after the specified
+one. Not even a &#8220;drop item&#8221; task is allowed in between.</dd>
+</dl>
+<dl class="docutils" id="index-66">
+<dt><code class="samp docutils literal"><span class="pre">do</span> <span class="pre">ID</span> <span class="pre">[ID...]</span></code></dt>
+<dd><p class="first">Indicate that doing this task also causes the specified other tasks
+to be done (if they aren&#8217;t done already). These other tasks are done
+immediately, without regard for any prerequisite items or tasks they
+might need, and their effects are carried out&#8212;including any
+<code class="samp docutils literal"><span class="pre">do</span></code> clauses they might have, recursively.</p>
+<div class="last versionadded">
+<p><span class="versionmodified">New in version 5.0.</span></p>
+</div>
+</dd>
+</dl>
+<dl class="docutils" id="index-67">
+<dt><code class="samp docutils literal"><span class="pre">get</span> <span class="pre">ID</span> <span class="pre">[ID...]</span></code></dt>
+<dd>Indicate that doing this task enables you to get the specified
+items, and must be done before you can get them.</dd>
+</dl>
+<dl class="docutils" id="index-68">
+<dt><code class="samp docutils literal"><span class="pre">give</span> <span class="pre">ID</span> <span class="pre">[ID...]</span></code></dt>
+<dd>Indicate that doing this task puts the specified items straight into
+your inventory, wherever they happen to be.</dd>
+</dl>
+<dl class="docutils" id="index-69">
+<dt><code class="samp docutils literal"><span class="pre">lose</span> <span class="pre">ID</span> <span class="pre">[ID...]</span></code></dt>
+<dd>Indicate that doing this task causes the specified items to be
+lost. This implies that all tasks which need these items must be
+done before this one.</dd>
+</dl>
+<dl class="docutils" id="index-70">
+<dt><code class="samp docutils literal"><span class="pre">drop</span> <span class="pre">ID</span> <span class="pre">[ID...]</span> <span class="pre">[in</span> <span class="pre">ID]</span> <span class="pre">[until</span> <span class="pre">ID</span> <span class="pre">[ID...]]</span></code></dt>
+<dd>Indicate that doing this task drops the specified items in the
+current room (or the room indicated by the in clause) if you&#8217;re
+carrying them. No &#8220;drop&#8221; message is generated. If there&#8217;s an
+<code class="samp docutils literal"><span class="pre">until</span></code> clause, you can&#8217;t retrieve the items until the
+specified tasks have been done.</dd>
+<dt><code class="samp docutils literal"><span class="pre">drop</span> <span class="pre">all</span> <span class="pre">[except</span> <span class="pre">ID</span> <span class="pre">[ID...]]</span> <span class="pre">[in</span> <span class="pre">ID]</span> <span class="pre">[until</span> <span class="pre">ID</span> <span class="pre">[ID...]]</span></code></dt>
+<dd>As above, but drop everything you&#8217;re carrying. The <code class="samp docutils literal"><span class="pre">except</span></code>
+clause can be used to omit specific items.</dd>
+</dl>
+<dl class="docutils" id="index-71">
+<dt><code class="samp docutils literal"><span class="pre">goto</span> <span class="pre">ID</span></code></dt>
+<dd>Indicate that you get &#8220;teleported&#8221; to the specified room when this
+task is done. This happens after <code class="samp docutils literal"><span class="pre">give</span></code> and <code class="samp docutils literal"><span class="pre">drop</span></code>
+actions.</dd>
+</dl>
+<dl class="docutils" id="index-72">
+<dt><code class="samp docutils literal"><span class="pre">safe</span></code></dt>
+<dd>Mark this task as safe&#8212;i.e., one that can&#8217;t cause the game solver
+to get stuck.</dd>
+</dl>
+<dl class="docutils" id="index-73">
+<dt><code class="samp docutils literal"><span class="pre">ignore</span></code></dt>
+<dd><p class="first">Don&#8217;t ever do this task explicitly when solving the game. The task
+may still be done via a <code class="samp docutils literal"><span class="pre">do</span></code> action.</p>
+<div class="last versionadded">
+<p><span class="versionmodified">New in version 5.0.</span></p>
+</div>
+</dd>
+</dl>
+<dl class="docutils" id="index-74">
+<dt><code class="samp docutils literal"><span class="pre">finish</span></code></dt>
+<dd>Indicate that doing this task finishes the game.</dd>
+</dl>
+<dl class="docutils" id="index-75">
+<dt><code class="samp docutils literal"><span class="pre">score</span> <span class="pre">NUMBER</span></code></dt>
+<dd>Indicate that you get the specified score for doing this task.</dd>
+</dl>
+<dl class="docutils" id="index-76">
+<dt><code class="samp docutils literal"><span class="pre">note</span> <span class="pre">STRING</span></code></dt>
+<dd>Append a note to the task&#8217;s note list.</dd>
+</dl>
+<dl class="docutils" id="index-77">
+<dt><code class="samp docutils literal"><span class="pre">cmd</span> <span class="pre">STRING</span> <span class="pre">[NUMBER]</span></code></dt>
+<dd>Specify the exact command you type to do the task. If a number
+follows the command, do the command that many times. Multiple
+<code class="samp docutils literal"><span class="pre">cmd</span></code> clauses concatenate into a list of commands.</dd>
+<dt><code class="samp docutils literal"><span class="pre">cmd</span> <span class="pre">none</span></code></dt>
+<dd>Indicate that no command is required to do this task.</dd>
+</dl>
+<dl class="docutils" id="index-78">
+<dt><code class="samp docutils literal"><span class="pre">style</span> <span class="pre">ID</span> <span class="pre">[ID...]</span></code></dt>
+<dd>Add a list of display <a class="reference internal" href="#styles">styles</a> to the task.</dd>
+</dl>
+</div>
+</div>
+<div class="section" id="variables">
+<span id="index-79"></span><h2>Variables<a class="headerlink" href="#variables" title="Permalink to this headline">¶</a></h2>
+<p>Various aspects of output are controlled by <a class="reference internal" href="vars.html"><span class="doc">Output variables</span></a>.  These are set
+using the following syntax:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">FORMAT</span><span class="o">.</span><span class="p">]</span><span class="n">ID</span> <span class="o">=</span> <span class="n">NUMBER</span> <span class="o">|</span> <span class="n">STRING</span> <span class="o">|</span> <span class="n">true</span> <span class="o">|</span> <span class="n">false</span> <span class="o">|</span> <span class="n">undef</span> <span class="p">[</span><span class="ow">in</span> <span class="n">style</span> <span class="n">ID</span><span class="p">];</span>
+</pre></div>
+</div>
+<p><code class="docutils literal"><span class="pre">FORMAT</span></code>, if specified, is the name of a specific output format&#8212;the
+variable then applies only to that output format.</p>
+<p><code class="docutils literal"><span class="pre">ID</span></code> is the name of the variable, and it can take a numeric or string
+value. Note that setting a variable to the value <code class="samp docutils literal"><span class="pre">undef</span></code>
+effectively removes it.</p>
+<p>The values <code class="samp docutils literal"><span class="pre">true</span></code> and <code class="samp docutils literal"><span class="pre">false</span></code> correspond to the integer
+values 1 and 0 respectively.</p>
+<p>If the <code class="samp docutils literal"><span class="pre">style</span></code> clause is present, this means to only set the
+variable to this value in the specified style.</p>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 5.3: </span>The <code class="samp docutils literal"><span class="pre">true</span></code> and <code class="samp docutils literal"><span class="pre">false</span></code> keywords.</p>
+</div>
+<span class="target" id="style"></span></div>
+<div class="section" id="styles">
+<span id="index-80"></span><h2>Styles<a class="headerlink" href="#styles" title="Permalink to this headline">¶</a></h2>
+<p>A <em>style</em> defines a set of variables with particular values, so that those
+values can be referred to together. IFM keeps track of the currently active
+list of styles, and there are two commands which change this list. The
+command:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">style</span> <span class="n">ID</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>pushes the specified style onto the style list. This style becomes the
+current style. Any IFM objects declared while a style list is in force will
+by default be output in those styles. Any variable setting is by default in
+the current style (though you can specify a particular style using the
+<code class="samp docutils literal"><span class="pre">in</span> <span class="pre">style</span></code> clause).</p>
+<p>The command:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">endstyle</span> <span class="p">[</span><span class="n">ID</span><span class="p">];</span>
+</pre></div>
+</div>
+<p>pops the current style from the style list. The previous style on the list
+(if any) becomes the current style. The <code class="docutils literal"><span class="pre">ID</span></code>, if specified, should match
+the <code class="docutils literal"><span class="pre">ID</span></code> in the corresponding style command, or a warning is given.</p>
+<p>Each display style has its own set of values for customization
+variables. On output, when the value of a variable is needed for displaying
+an object, the style list for that object is searched in reverse order of
+declaration. The value used is from the first style to define this
+variable. If no style defines it, then the default value is used.</p>
+<p>If a style is referenced by an object but not defined anywhere in the
+input, then its definition is assumed to be in a separate file, which is
+searched for using the standard search path. The name of this file is
+formed by adding a <code class="file docutils literal"><span class="pre">.ifm</span></code> suffix to the style name. If the file is
+not found, or it does not define the required style, a warning is given.</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="contents.html">
+              <img class="logo" src="_static/logo.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Language</a><ul>
+<li><a class="reference internal" href="#symbols">Symbols</a></li>
+<li><a class="reference internal" href="#format">Format</a></li>
+<li><a class="reference internal" href="#control">Control</a></li>
+<li><a class="reference internal" href="#tags">Tags</a></li>
+<li><a class="reference internal" href="#special-names">Special names</a></li>
+<li><a class="reference internal" href="#commands">Commands</a><ul>
+<li><a class="reference internal" href="#rooms">Rooms</a></li>
+<li><a class="reference internal" href="#items">Items</a></li>
+<li><a class="reference internal" href="#links">Links</a></li>
+<li><a class="reference internal" href="#joins">Joins</a></li>
+<li><a class="reference internal" href="#tasks">Tasks</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#variables">Variables</a></li>
+<li><a class="reference internal" href="#styles">Styles</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="contents.html">Documentation overview</a><ul>
+      <li>Previous: <a href="usage.html" title="previous chapter">Using IFM</a></li>
+      <li>Next: <a href="vars.html" title="next chapter">Output variables</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/language.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;1998-2022, Glenn Hutchings.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/language.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
